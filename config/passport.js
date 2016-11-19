@@ -113,7 +113,8 @@ module.exports = function(passport) {
 	passport.use(new FacebookStrategy({
     		clientID: FACEBOOK_APP_ID,
     		clientSecret: FACEBOOK_APP_SECRET,
-    		callbackURL: "http://localhost:8080/auth/facebook/callback"
+    		callbackURL: "http://localhost:8080/auth/facebook/callback",
+            profileFields: ['id', 'emails', 'name'] //This
   		},
   		function(req, accessToken, refreshToken, profile, done) {
     		// asynchronous verification, for effect...
@@ -208,10 +209,11 @@ module.exports = function(passport) {
 // Strategies in Passport require a `verify` function, which accept
 // credentials (in this case, an accessToken, refreshToken, and Google
 // profile), and invoke a callback with a user object.
+// * Goolgle OAuth API's callback must be officially registered Domain Name.
 		passport.use(new GoogleStrategy({
     				clientID: GOOGLE_CONSUMER_KEY,
     				clientSecret: GOOGLE_CONSUMER_SECRET,
-    				callbackURL: "http://localhost:8080/auth/google/callback"
+    				callbackURL: "http://YOUR_DOMAIN_NAME:8080/auth/google/callback"
   				},
   				function(req, accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...

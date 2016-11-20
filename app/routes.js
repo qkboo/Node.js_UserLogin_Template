@@ -211,6 +211,25 @@ app.get('/auth/google/callback',
 				failureRedirect: '/login' }));
 
 
+// GET /auth/naver
+// Use passport.authenticate() as route middleware to authenticate the
+// request. The first step in Naver authentication will involve
+// redirecting the user to nid.naver.com. After authorization, Naver
+// will redirect the user back to this application at /auth/naver/callback
+app.get('/auth/naver',
+  passport.authenticate('naver', { scope : ['profile', 'email'] }));
+
+// GET /auth/naver/callback
+// Use passport.authenticate() as route middleware to authenticate the
+// request. If authentication fails, the user will be redirected back to the
+// login page. Otherwise, the primary route function function will be called,
+// which, in this example, will redirect the user to the home page.
+app.get('/auth/naver/callback',
+  passport.authenticate('naver', { 
+        successRedirect : '/about',   
+        failureRedirect: '/login' }));
+
+
 var io = require('socket.io').listen(server);
 
 var usernames = {};

@@ -19,6 +19,14 @@ var TWITTER_CONSUMER_SECRET = "<Insert Your Secret Key Here>";
 var GOOGLE_CONSUMER_KEY = "<Insert Your Key Here>";
 var GOOGLE_CONSUMER_SECRET = "<Insert Your Secret Key Here>";
 var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy
+var GOOGLE_CALLBACK = "http://YOUR_DOMAIN_NAME:8080/auth/google/callback";
+
+// Naver authentication
+// For more details go to https://github.com/naver/passport-naver
+var NaverStrategy   = require('passport-naver').Strategy
+var NAVER_CLIENT_ID = "<Insert Your Key Here>";
+var NAVER_CLIENT_SECRET = "<Insert Your Secret Key Here>";
+var NAVER_CALLBACK = "<Insert Your Callback URL Hear>";
 
 var User       = require('../app/models/user');
 
@@ -213,7 +221,7 @@ module.exports = function(passport) {
 		passport.use(new GoogleStrategy({
     				clientID: GOOGLE_CONSUMER_KEY,
     				clientSecret: GOOGLE_CONSUMER_SECRET,
-    				callbackURL: "http://YOUR_DOMAIN_NAME:8080/auth/google/callback"
+    				callbackURL: GOOGLE_CALLBACK
   				},
   				function(req, accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
@@ -253,6 +261,38 @@ module.exports = function(passport) {
 
     			}
  
+));
+
+// Use the NaverStrategy within Passport.
+// Strategies in Passport require a `verify` function, which accept
+// credentials (in this case, an accessToken, refreshToken, and Google
+// profile), and invoke a callback with a user object.
+passport.use(new NaverStrategy({
+        clientID: NAVER_CLIENT_ID,
+        clientSecret: NAVER_CLIENT_SECRET,
+        callbackURL: NAVER_CALLBACK
+    },
+    function(accessToken, refreshToken, profile, done) {
+        User.findOne({
+            'naver.id': profile.id
+        }, function(err, user) {
+            if (!user) {
+                user = new User({
+                    name: profile.displayName,
+                    email: profile.emails[0].value,
+                    username: profile.displayName,
+                    provider: 'naver',
+                    naver: profile._json
+                });
+                user.save(function(err) {
+                    if (err) console.log(err);
+                    return done(err, user);
+                });
+            } else {
+                return done(err, user);
+            }
+        });
+    }
 ));
 
 };
